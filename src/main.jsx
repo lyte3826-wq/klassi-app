@@ -7,6 +7,7 @@ import Dashboard from './pages/Dashboard.jsx'
 import Login from './pages/Login.jsx'
 import Signup from './pages/Signup.jsx'
 import Tutors from './pages/Tutors.jsx'
+import TutorProfile from './pages/TutorProfile.jsx'
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
@@ -17,6 +18,7 @@ createRoot(document.getElementById('root')).render(
         <Route path="/signup" element={<Signup />} />
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/tutors" element={<Tutors />} />
+        <Route path="/tutors/:id" element={<TutorProfile />} />
       </Routes>
     </BrowserRouter>
   </StrictMode>,
