@@ -73,7 +73,7 @@ export default function App() {
           <div className={`navbar__links ${menuOpen ? "navbar__links--open" : ""}`}>
             <a href="#subjects">Subjects</a>
             <a href="#how">How it works</a>
-            <a href="#tutors">Tutors</a>
+            <a href="/tutors">Tutors</a>
             <Link to="/login" className="btn btn--outline">Log in</Link>
             <Link to="/signup" className="btn btn--primary">Get Started</Link>
           </div>
