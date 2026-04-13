@@ -49,10 +49,7 @@ export default function TutorProfile() {
     setShowBooking(true);
   }
 
-  async function handleConfirmBooking() {
-    if (!selectedDate || !selectedTime) return;
-    setBooking(true);
-
+  async function saveBooking(paymentRef, platformFee) {
     const { error } = await supabase.from("bookings").insert({
       student_id: user.id,
       tutor_id: tutor.id,
@@ -60,7 +57,9 @@ export default function TutorProfile() {
       time: selectedTime,
       subject: tutor.subjects?.[0],
       rate: tutor.rate,
-      status: "pending",
+      status: "confirmed",
+      payment_ref: paymentRef,
+      platform_fee: platformFee,
     });
 
     setBooking(false);
@@ -68,6 +67,30 @@ export default function TutorProfile() {
       setBookingSuccess(true);
       setShowBooking(false);
     }
+  }
+
+  function handleConfirmBooking() {
+    if (!selectedDate || !selectedTime) return;
+    setBooking(true);
+
+    const klassiCut = Math.round(tutor.rate * 0.15);
+    const amountInKobo = tutor.rate * 100;
+
+    const handler = window.PaystackPop.setup({
+      key: import.meta.env.VITE_PAYSTACK_PUBLIC_KEY,
+      email: user.email,
+      amount: amountInKobo,
+      currency: "NGN",
+      ref: "klassi_" + Date.now(),
+      onClose: function () {
+        setBooking(false);
+      },
+      callback: function (response) {
+        saveBooking(response.reference, klassiCut);
+      },
+    });
+
+    handler.openIframe();
   }
 
   if (loading) {
@@ -94,7 +117,6 @@ export default function TutorProfile() {
 
   return (
     <div className="profile-page">
-      {/* HEADER */}
       <div className="profile-header">
         <div className="profile-header__inner">
           <a href="/" className="tutors-logo">Klass<span>i</span></a>
@@ -105,10 +127,7 @@ export default function TutorProfile() {
       </div>
 
       <div className="profile-body">
-        {/* LEFT — TUTOR INFO */}
         <div className="profile-main">
-
-          {/* TOP CARD */}
           <div className="profile-card profile-card--hero">
             <div className="profile-card__hero-bg" />
             <div className="profile-card__hero-content">
@@ -140,13 +159,11 @@ export default function TutorProfile() {
             </div>
           </div>
 
-          {/* BIO */}
           <div className="profile-card">
             <h2 className="profile-card__title">About</h2>
             <p className="profile-bio">{tutor.bio}</p>
           </div>
 
-          {/* LEVELS */}
           <div className="profile-card">
             <h2 className="profile-card__title">Teaches</h2>
             <div className="profile-levels">
@@ -159,7 +176,6 @@ export default function TutorProfile() {
             </div>
           </div>
 
-          {/* SUBJECTS */}
           <div className="profile-card">
             <h2 className="profile-card__title">Subjects</h2>
             <div className="profile-subjects-list">
@@ -173,7 +189,6 @@ export default function TutorProfile() {
           </div>
         </div>
 
-        {/* RIGHT — BOOKING SIDEBAR */}
         <div className="profile-sidebar">
           <div className="booking-card">
             <div className="booking-card__rate">
@@ -195,8 +210,8 @@ export default function TutorProfile() {
             {bookingSuccess ? (
               <div className="booking-success">
                 <div className="booking-success__icon">🎉</div>
-                <h3>Booking Requested!</h3>
-                <p>Your session request has been sent to {tutor.full_name}. They will confirm shortly.</p>
+                <h3>Booking Confirmed!</h3>
+                <p>Your session with {tutor.full_name} has been booked and paid. See you there!</p>
                 <button className="btn-primary" onClick={() => navigate("/dashboard")}>
                   Go to Dashboard
                 </button>
@@ -232,7 +247,7 @@ export default function TutorProfile() {
                   onClick={handleConfirmBooking}
                   disabled={!selectedDate || !selectedTime || booking}
                 >
-                  {booking ? "Booking..." : `Confirm — ₦${tutor.rate?.toLocaleString()}`}
+                  {booking ? "Opening payment..." : `Pay ₦${tutor.rate?.toLocaleString()} →`}
                 </button>
                 <button className="btn-cancel" onClick={() => setShowBooking(false)}>
                   Cancel
