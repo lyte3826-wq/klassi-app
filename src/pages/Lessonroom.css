@@ -1,0 +1,344 @@
+/* ─── LESSON ROOM ────────────────────────────────────────── */
+.room-page {
+  min-height: 100vh;
+  background: #0d1117;
+  font-family: 'DM Sans', sans-serif;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ─── TOP BAR ────────────────────────────────────────────── */
+.room-topbar {
+  height: 60px;
+  background: #161b22;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 24px;
+  flex-shrink: 0;
+}
+.room-logo {
+  font-family: 'Instrument Serif', serif;
+  font-size: 22px;
+  color: white;
+  text-decoration: none;
+}
+.room-logo span { color: #1db954; }
+.room-info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+.room-subject {
+  font-size: 14px;
+  font-weight: 700;
+  color: white;
+}
+.room-date {
+  font-size: 12px;
+  color: rgba(255,255,255,0.4);
+}
+.room-timer {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+  transition: color 0.5s;
+}
+.room-timer__label {
+  font-size: 11px;
+  color: rgba(255,255,255,0.4);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.room-timer__value {
+  font-family: 'Instrument Serif', serif;
+  font-size: 24px;
+  font-weight: 400;
+  letter-spacing: -1px;
+}
+
+/* ─── BODY ───────────────────────────────────────────────── */
+.room-body {
+  flex: 1;
+  display: flex;
+  overflow: hidden;
+  height: calc(100vh - 60px);
+}
+
+/* ─── MAIN VIDEO AREA ────────────────────────────────────── */
+.room-main {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+}
+.room-video {
+  width: 100%;
+  height: 100%;
+}
+.room-video iframe {
+  width: 100%;
+  height: 100%;
+  border: none;
+}
+
+/* ─── PRE-GAME ───────────────────────────────────────────── */
+.room-pregame {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  gap: 16px;
+  padding: 40px;
+  text-align: center;
+}
+.room-pregame__icon { font-size: 56px; margin-bottom: 8px; }
+.room-pregame h2 {
+  font-family: 'Instrument Serif', serif;
+  font-size: 32px;
+  color: white;
+  letter-spacing: -0.5px;
+}
+.room-pregame p {
+  font-size: 16px;
+  color: rgba(255,255,255,0.6);
+}
+.room-pregame p strong { color: white; }
+.room-pregame__tips {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 8px 0;
+}
+.tip {
+  font-size: 14px;
+  color: rgba(255,255,255,0.5);
+  background: rgba(255,255,255,0.04);
+  padding: 10px 20px;
+  border-radius: 100px;
+  border: 1px solid rgba(255,255,255,0.08);
+}
+.btn-start {
+  background: #1db954;
+  color: white;
+  border: none;
+  padding: 18px 48px;
+  border-radius: 100px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 18px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+  margin-top: 8px;
+}
+.btn-start:hover {
+  background: #169c44;
+  transform: translateY(-2px);
+  box-shadow: 0 12px 32px rgba(29,185,84,0.35);
+}
+
+/* ─── SIDEBAR ────────────────────────────────────────────── */
+.room-sidebar {
+  width: 300px;
+  background: #161b22;
+  border-left: 1px solid rgba(255,255,255,0.08);
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+}
+.room-tabs {
+  display: flex;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+.room-tab {
+  flex: 1;
+  padding: 14px;
+  background: none;
+  border: none;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  color: rgba(255,255,255,0.4);
+  cursor: pointer;
+  transition: all 0.2s;
+  border-bottom: 2px solid transparent;
+}
+.room-tab:hover { color: white; }
+.room-tab--active {
+  color: #1db954;
+  border-bottom-color: #1db954;
+}
+
+/* ─── NOTES ──────────────────────────────────────────────── */
+.room-notes {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 16px;
+  gap: 12px;
+}
+.room-notes__textarea {
+  flex: 1;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 12px;
+  padding: 16px;
+  color: white;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  line-height: 1.7;
+  resize: none;
+  outline: none;
+  transition: border-color 0.2s;
+  min-height: 300px;
+}
+.room-notes__textarea::placeholder { color: rgba(255,255,255,0.2); }
+.room-notes__textarea:focus { border-color: rgba(29,185,84,0.4); }
+.room-notes__save {
+  background: #1db954;
+  color: white;
+  border: none;
+  padding: 12px;
+  border-radius: 100px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.room-notes__save:hover { background: #169c44; }
+
+/* ─── INFO PANEL ─────────────────────────────────────────── */
+.room-info-panel {
+  padding: 20px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.room-info-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 12px;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+.room-info-row span { font-size: 13px; color: rgba(255,255,255,0.4); }
+.room-info-row strong { font-size: 14px; color: white; }
+.btn-end {
+  margin-top: 8px;
+  background: rgba(239,68,68,0.12);
+  color: #ef4444;
+  border: 1px solid rgba(239,68,68,0.2);
+  padding: 12px;
+  border-radius: 100px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.btn-end:hover {
+  background: rgba(239,68,68,0.2);
+}
+
+/* ─── ENDED SCREEN ───────────────────────────────────────── */
+.room-ended {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  gap: 16px;
+  padding: 40px;
+  text-align: center;
+}
+.room-ended__icon { font-size: 64px; margin-bottom: 8px; }
+.room-ended h1 {
+  font-family: 'Instrument Serif', serif;
+  font-size: 40px;
+  color: white;
+  letter-spacing: -1px;
+}
+.room-ended p { font-size: 16px; color: rgba(255,255,255,0.6); }
+.room-ended p strong { color: white; }
+.room-ended__notes {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 16px;
+  padding: 24px;
+  max-width: 500px;
+  text-align: left;
+  margin-top: 8px;
+}
+.room-ended__notes h3 {
+  font-size: 14px;
+  font-weight: 700;
+  color: #1db954;
+  margin-bottom: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.room-ended__notes p { font-size: 14px; color: rgba(255,255,255,0.7); line-height: 1.7; }
+.room-ended__actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 8px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+.btn-green {
+  background: #1db954;
+  color: white;
+  border: none;
+  padding: 14px 32px;
+  border-radius: 100px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.btn-green:hover { background: #169c44; transform: translateY(-1px); }
+.btn-outline {
+  background: transparent;
+  color: white;
+  border: 1.5px solid rgba(255,255,255,0.2);
+  padding: 14px 32px;
+  border-radius: 100px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.btn-outline:hover { border-color: white; }
+
+/* ─── LOADING ────────────────────────────────────────────── */
+.room-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  gap: 16px;
+  color: rgba(255,255,255,0.5);
+}
+.room-spinner {
+  width: 36px; height: 36px;
+  border: 3px solid rgba(255,255,255,0.1);
+  border-top-color: #1db954;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ─── RESPONSIVE ─────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .room-body { flex-direction: column; height: auto; }
+  .room-sidebar { width: 100%; height: 400px; }
+  .room-main { min-height: 60vh; }
+  .room-pregame h2 { font-size: 24px; }
+}

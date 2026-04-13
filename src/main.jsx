@@ -8,6 +8,7 @@ import Login from './pages/Login.jsx'
 import Signup from './pages/Signup.jsx'
 import Tutors from './pages/Tutors.jsx'
 import TutorProfile from './pages/TutorProfile.jsx'
+import LessonRoom from './pages/LessonRoom.jsx'
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
@@ -19,6 +20,7 @@ createRoot(document.getElementById('root')).render(
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/tutors" element={<Tutors />} />
         <Route path="/tutors/:id" element={<TutorProfile />} />
+        <Route path="/room/:bookingId" element={<LessonRoom />} />
       </Routes>
     </BrowserRouter>
   </StrictMode>,

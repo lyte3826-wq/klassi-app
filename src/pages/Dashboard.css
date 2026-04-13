@@ -373,3 +373,16 @@
     gap: 16px;
   }
 }
+.booking-row__enter {
+  background: #1db954;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 100px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.booking-row__enter:hover { background: #169c44; }

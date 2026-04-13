@@ -17,12 +17,10 @@ export default function Dashboard() {
   async function loadDashboard() {
     setLoading(true);
 
-    // Get current user
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) { navigate("/login"); return; }
     setUser(user);
 
-    // Get profile
     const { data: profileData } = await supabase
       .from("profiles")
       .select("*")
@@ -30,7 +28,6 @@ export default function Dashboard() {
       .single();
     setProfile(profileData);
 
-    // Get bookings
     const { data: bookingData } = await supabase
       .from("bookings")
       .select("*")
@@ -191,6 +188,12 @@ export default function Dashboard() {
                     <div className="booking-row__rate">
                       ₦{booking.rate?.toLocaleString()}
                     </div>
+                    <button
+                      className="booking-row__enter"
+                      onClick={() => navigate(`/room/${booking.id}`)}
+                    >
+                      Enter Lesson →
+                    </button>
                     <button
                       className="booking-row__cancel"
                       onClick={() => cancelBooking(booking.id)}
