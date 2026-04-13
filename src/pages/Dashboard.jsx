@@ -1,97 +1,222 @@
-import { useEffect, useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
-import { supabase } from '../lib/supabase'
-import './Auth.css'
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { supabase } from "../lib/supabase";
+import "./Dashboard.css";
 
 export default function Dashboard() {
-  const navigate = useNavigate()
-  const [session, setSession] = useState(null)
-  const [isLoading, setIsLoading] = useState(true)
+  const navigate = useNavigate();
+  const [user, setUser] = useState(null);
+  const [profile, setProfile] = useState(null);
+  const [bookings, setBookings] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    let isMounted = true
+    loadDashboard();
+  }, []);
 
-    async function loadSession() {
-      const { data } = await supabase.auth.getSession()
+  async function loadDashboard() {
+    setLoading(true);
 
-      if (isMounted) {
-        setSession(data.session)
-        setIsLoading(false)
-      }
-    }
+    // Get current user
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) { navigate("/login"); return; }
+    setUser(user);
 
-    loadSession()
+    // Get profile
+    const { data: profileData } = await supabase
+      .from("profiles")
+      .select("*")
+      .eq("id", user.id)
+      .single();
+    setProfile(profileData);
 
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, nextSession) => {
-      if (isMounted) {
-        setSession(nextSession)
-        setIsLoading(false)
-      }
-    })
+    // Get bookings
+    const { data: bookingData } = await supabase
+      .from("bookings")
+      .select("*")
+      .eq("student_id", user.id)
+      .order("created_at", { ascending: false });
+    setBookings(bookingData || []);
 
-    return () => {
-      isMounted = false
-      subscription.unsubscribe()
-    }
-  }, [])
+    setLoading(false);
+  }
 
   async function handleSignOut() {
-    await supabase.auth.signOut()
-    navigate('/login')
+    await supabase.auth.signOut();
+    navigate("/");
+  }
+
+  async function cancelBooking(bookingId) {
+    await supabase.from("bookings").delete().eq("id", bookingId);
+    setBookings((prev) => prev.filter((b) => b.id !== bookingId));
+  }
+
+  const upcoming = bookings.filter((b) => b.status !== "cancelled");
+  const firstName = profile?.full_name?.split(" ")[0] || user?.email?.split("@")[0] || "there";
+
+  if (loading) {
+    return (
+      <div className="dash-page">
+        <div className="dash-loading">
+          <div className="dash-spinner" />
+          <p>Loading your dashboard...</p>
+        </div>
+      </div>
+    );
   }
 
   return (
-    <div className="auth-page">
-      <div className="auth-shell auth-shell--dashboard">
-        <Link to="/" className="auth-logo">
-          Klass<span>i</span>
-        </Link>
-
-        <section className="auth-panel dashboard-card">
-          <span className="dashboard-badge">Dashboard Ready</span>
-          <h1 className="auth-title">
-            {isLoading
-              ? 'Preparing your Klassi workspace.'
-              : session
-                ? 'You are signed in and ready to keep learning moving.'
-                : 'Your Klassi account is set up.'}
-          </h1>
-          <p className="auth-copy">
-            {isLoading
-              ? 'We are checking your current session now.'
-              : session
-                ? 'This route is wired and ready for your next dashboard build. You can now layer in tutor discovery, booking, and profile features.'
-                : 'If email confirmation is enabled in Supabase, verify your inbox and then log in to continue into your full dashboard experience.'}
-          </p>
-
-          <div className="dashboard-meta">
-            <div>
-              <strong>Current account:</strong>{' '}
-              {session?.user?.email ?? 'No active session detected yet'}
+    <div className="dash-page">
+      {/* SIDEBAR */}
+      <aside className="dash-sidebar">
+        <a href="/" className="dash-logo">Klass<span>i</span></a>
+        <nav className="dash-nav">
+          <div className="dash-nav__item dash-nav__item--active">
+            <span>📋</span> Dashboard
+          </div>
+          <div className="dash-nav__item" onClick={() => navigate("/tutors")}>
+            <span>🔍</span> Find Tutors
+          </div>
+          <div className="dash-nav__item">
+            <span>📅</span> My Sessions
+          </div>
+          <div className="dash-nav__item">
+            <span>👤</span> Profile
+          </div>
+        </nav>
+        <div className="dash-sidebar__bottom">
+          <div className="dash-user">
+            <div className="dash-user__avatar">
+              {firstName.charAt(0).toUpperCase()}
             </div>
-            <div>
-              <strong>Next build step:</strong> connect dashboard data, protected routes, and profile loading.
+            <div className="dash-user__info">
+              <strong>{profile?.full_name || "User"}</strong>
+              <span>{profile?.role || "student"}</span>
             </div>
           </div>
+          <button className="dash-signout" onClick={handleSignOut}>
+            Sign out
+          </button>
+        </div>
+      </aside>
 
-          <div className="dashboard-actions">
-            {session ? (
-              <button type="button" className="auth-button" onClick={handleSignOut}>
-                Sign out
+      {/* MAIN */}
+      <main className="dash-main">
+        {/* TOP BAR */}
+        <div className="dash-topbar">
+          <div>
+            <h1 className="dash-welcome">Good day, {firstName} 👋</h1>
+            <p className="dash-welcome__sub">Here's what's happening with your learning.</p>
+          </div>
+          <button className="dash-find-btn" onClick={() => navigate("/tutors")}>
+            + Find a Tutor
+          </button>
+        </div>
+
+        {/* STATS */}
+        <div className="dash-stats">
+          <div className="dash-stat-card">
+            <div className="dash-stat-card__icon">📚</div>
+            <div>
+              <div className="dash-stat-card__value">{bookings.length}</div>
+              <div className="dash-stat-card__label">Total Sessions</div>
+            </div>
+          </div>
+          <div className="dash-stat-card">
+            <div className="dash-stat-card__icon">⏳</div>
+            <div>
+              <div className="dash-stat-card__value">
+                {bookings.filter((b) => b.status === "pending").length}
+              </div>
+              <div className="dash-stat-card__label">Pending</div>
+            </div>
+          </div>
+          <div className="dash-stat-card">
+            <div className="dash-stat-card__icon">✅</div>
+            <div>
+              <div className="dash-stat-card__value">
+                {bookings.filter((b) => b.status === "confirmed").length}
+              </div>
+              <div className="dash-stat-card__label">Confirmed</div>
+            </div>
+          </div>
+          <div className="dash-stat-card">
+            <div className="dash-stat-card__icon">💰</div>
+            <div>
+              <div className="dash-stat-card__value">
+                ₦{bookings.reduce((sum, b) => sum + (b.rate || 0), 0).toLocaleString()}
+              </div>
+              <div className="dash-stat-card__label">Total Spent</div>
+            </div>
+          </div>
+        </div>
+
+        {/* BOOKINGS */}
+        <div className="dash-section">
+          <div className="dash-section__header">
+            <h2>My Booked Sessions</h2>
+            <button className="dash-section__link" onClick={() => navigate("/tutors")}>
+              Book another →
+            </button>
+          </div>
+
+          {upcoming.length === 0 ? (
+            <div className="dash-empty">
+              <div className="dash-empty__icon">📅</div>
+              <h3>No sessions yet</h3>
+              <p>Find a tutor and book your first session to get started.</p>
+              <button className="dash-find-btn" onClick={() => navigate("/tutors")}>
+                Browse Tutors →
               </button>
-            ) : (
-              <Link to="/login" className="auth-button">
-                Log in
-              </Link>
-            )}
-            <Link to="/" className="auth-button--secondary">
-              Back to home
-            </Link>
+            </div>
+          ) : (
+            <div className="dash-bookings">
+              {upcoming.map((booking) => (
+                <div className="booking-row" key={booking.id}>
+                  <div className="booking-row__left">
+                    <div className="booking-row__avatar">
+                      {booking.subject?.charAt(0) || "S"}
+                    </div>
+                    <div className="booking-row__info">
+                      <div className="booking-row__subject">{booking.subject}</div>
+                      <div className="booking-row__time">
+                        📅 {booking.date} &nbsp;·&nbsp; ⏰ {booking.time}
+                      </div>
+                    </div>
+                  </div>
+                  <div className="booking-row__right">
+                    <div className={`booking-row__status booking-row__status--${booking.status}`}>
+                      {booking.status}
+                    </div>
+                    <div className="booking-row__rate">
+                      ₦{booking.rate?.toLocaleString()}
+                    </div>
+                    <button
+                      className="booking-row__cancel"
+                      onClick={() => cancelBooking(booking.id)}
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* CTA BANNER */}
+        {bookings.length === 0 && (
+          <div className="dash-cta">
+            <div className="dash-cta__text">
+              <h3>Ready to start learning?</h3>
+              <p>Browse our verified tutors and book your first session today.</p>
+            </div>
+            <button className="dash-find-btn" onClick={() => navigate("/tutors")}>
+              Find a Tutor →
+            </button>
           </div>
-        </section>
-      </div>
+        )}
+      </main>
     </div>
-  )
+  );
 }
